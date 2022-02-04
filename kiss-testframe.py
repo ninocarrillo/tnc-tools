@@ -98,13 +98,18 @@ except:
 
 print('Frame interval = %f' % frame_interval, ' seconds.')
 
-FESC = 0xDB
-FEND = 0xC0
-TFESC = 0xDD
-TFEND = 0xDC
+FESC = int(0xDB).to_bytes(1,'big')
+FEND = int(0xC0).to_bytes(1,'big')
+TFESC = int(0xDD).to_bytes(1,'big')
+TFEND = int(0xDC).to_bytes(1,'big')
+KISS_PORT = 0
+KISS_COMMAND = 0
+KISS_TYPE_ID = (KISS_PORT * 16) + KISS_COMMAND
+KISS_TYPE_ID = KISS_TYPE_ID.to_bytes(1,'big')
 
 for i in range(0, frame_count):
-	kiss_frame = bytearray(FEND.to_bytes(1,'big'))
+	kiss_frame = bytearray()
+	#kiss_frame = bytearray(FEND.to_bytes(1,'big'))
 	frame_text = "KISS Frame "
 	kiss_frame +=bytearray(frame_text.encode())
 	frame_text = str(i + 1) + ' '
@@ -115,11 +120,22 @@ for i in range(0, frame_count):
 		rand = random.randint(32,126)
 		rand_bytes.extend(bytearray(rand.to_bytes(1,'big')))
 	kiss_frame.extend(rand_bytes)
-	print(kiss_frame)
-	#for k in kiss_frame:
-	#	print(kiss_frame[k], end='')
-	
-
-
+	frame_index = 0
+	kiss_output_frame = bytearray()
+	while(frame_index < len(kiss_frame)):
+		kiss_byte = kiss_frame[frame_index]
+		if kiss_byte.to_bytes(1,'big') == FESC:
+			kiss_output_frame.extend(FESC)
+			kiss_output_frame.extend(TFESC)
+		elif kiss_byte.to_bytes(1, 'big') == FEND:
+			kiss_output_frame.extend(FESC)
+			kiss_output_frame.extend(TFEND)
+		else:
+			kiss_output_frame.extend(kiss_byte.to_bytes(1, 'big'))
+		frame_index += 1
+	kiss_output_frame = bytearray(FEND) + bytearray(KISS_TYPE_ID) + kiss_output_frame + bytearray(FEND)
+	print(kiss_output_frame)
+	port.write(kiss_output_frame)
+	time.sleep(frame_interval)
 
 GracefulExit(port, 0)

@@ -13,6 +13,7 @@ import sys
 import time
 
 def print_frame(frame, time, count):
+	print("-------- ", end='')
 	print(time, end=' ')
 	frame_len = len(frame)
 	print("%8d" % count, end='  ')
