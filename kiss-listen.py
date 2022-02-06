@@ -43,8 +43,6 @@ def print_frame(frame, time, count):
 				frame_index += 1
 		print('\r\n', end='')
 
-	
-
 if sys.version_info < (3, 0): 
 	print("Python version should be 3.x, exiting")
 	sys.exit(1)
