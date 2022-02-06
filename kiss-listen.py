@@ -10,14 +10,14 @@
 
 import serial
 import sys
-import time
+import datetime
 
 def print_frame(frame, time, count):
-	print("-------- ", end='')
+	print("-- ", end='')
 	print(time, end=' ')
 	frame_len = len(frame)
-	print("%8d" % count, end='  ')
-	print("KISS frame contains", frame_len, end=' bytes:\r\n')
+	print("frame number: %d" % count, end=' ')
+	print("byte count: ", frame_len, end='\r\n')
 	frame_lines = (frame_len // 16)
 	if (frame_len % 16) > 0:
 		frame_lines += 1
@@ -86,9 +86,9 @@ while 1:
 			elif ord(input_data) == FEND:
 				if len(kiss_frame) > 0:
 					frame_count += 1
-					t = time.localtime()
-					kiss_frame_time = time.strftime("%H:%M:%S", t)
-					print_frame(kiss_frame, kiss_frame_time, frame_count)
+					t = datetime.datetime.now()
+					#kiss_frame_time = time.strftime("%H:%M:%S", t)
+					print_frame(kiss_frame, t, frame_count)
 					kiss_frame = []
 				else:
 					kiss_frame = []
