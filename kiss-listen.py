@@ -41,7 +41,7 @@ def print_frame(frame, time, count):
 			if frame_index < frame_len:
 				print("%2X" % frame[frame_index], end=' ')
 				frame_index += 1
-		print('\r\n', end='')
+		print('\r\n', end='', flush=True)
 
 if sys.version_info < (3, 0): 
 	print("Python version should be 3.x, exiting")
