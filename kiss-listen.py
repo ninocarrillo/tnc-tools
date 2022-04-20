@@ -13,7 +13,7 @@ import sys
 import datetime
 
 def print_frame(frame, time, count):
-	print("-- ", end='')
+	print("\r\n-- ", end='')
 	print(time, end=' ')
 	frame_len = len(frame)
 	print("frame number: %d" % count, end=' ')
@@ -79,7 +79,7 @@ frame_count = 0
 while 1:
 	input_data = port.read(1)
 	if input_data:
-		# print(input_data)
+#		print(input_data)
 		if kiss_state == "non-escaped":
 			if ord(input_data) == FESC:
 				kiss_state = "escaped"
@@ -89,6 +89,10 @@ while 1:
 					t = datetime.datetime.now()
 					#kiss_frame_time = time.strftime("%H:%M:%S", t)
 					print_frame(kiss_frame, t, frame_count)
+					kiss_frame_string = ""
+					for character in kiss_frame:
+						kiss_frame_string += chr(character)
+					print(kiss_frame_string)
 					kiss_frame = []
 				else:
 					kiss_frame = []
