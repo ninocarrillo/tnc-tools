@@ -1,2 +1,5 @@
 # kiss-tools
-utilities for serial port KISS interfaces
+Utilities for serial port KISS interfaces
+# Requirements
+- Python3
+- Pyserial
