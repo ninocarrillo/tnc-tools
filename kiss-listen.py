@@ -14,123 +14,124 @@ import datetime
 
 def print_ax25_header(frame):
 	count = len(frame)
-	if (count > 15)
-	valid_header = 1
-	address_extension_bit = 0
-	index = 1
-	subfield_character_index = 0
-	subfield_index = 0
-	print("- AX.25 Decode:")
-	# Print address information
-	while address_extension_bit == 0:
-		working_character = int(frame[index])
-		if (working_character & 0b1) == 1:
-			address_extension_bit = 1
-		working_character = working_character >> 1
-		subfield_character_index = subfield_character_index + 1
-		if (subfield_character_index == 1):
-			if (subfield_index == 0):
-				print("To:", end='')
-			elif (subfield_index == 1):
-				print(", From:", end='')
-			else:
-				print(", Via:", end='')
-		if subfield_character_index < 7:
-			# This is a callsign character
-			if (working_character != 0) and (working_character != 0x20):
-				print(chr(working_character), end='')
-		elif subfield_character_index == 7:
-			# This is the SSID characters
-			# Get bits
-			print('-', end='')
-			print(working_character & 0b1111, end='')
-			if (working_character & 0b10000000):
-				# C or H bit is set
-				print('*', end=' ')
-			# This field is complete
-			subfield_character_index = 0
-			subfield_index = subfield_index + 1
-		index = index + 1
-		if index > count:
-			address_extension_bit = 1
-	# Control and PID fields
-	working_character = frame[index]
-	print(", Control: ", end='')
-	poll_final_bit = (working_character & 0x10) >> 4
-	# determine what type of frame this is
-	if (working_character & 1) == 1:
-		# either a Supervisory or Unnumbered frame
-		frame_type = working_character & 3
-	else:
-		# Information frame
-		frame_type = 0
-		ax25_ns = (working_character >> 1) & 7
-		ax25_nr = (working_character >> 5) & 7
-
-	if frame_type == 1:
-		# Supervisory frame
-		ax25_nr = (working_character >> 5) & 7
-
-	if frame_type == 3:
-		# Unnumbered frame, determine what type
-		ax25_u_control_field_type = working_character & 0xEF
-	else:
-		ax25_u_control_field_type = 0
-
-	if (ax25_u_control_field_type == 0x6F):
-		print("SABME", end='')
-	elif (ax25_u_control_field_type == 0x2F):
-		print("SABM", end='')
-	elif (ax25_u_control_field_type == 0x43):
-		print("DISC", end='')
-	elif (ax25_u_control_field_type == 0x0F):
-		print("DM", end='')
-	elif (ax25_u_control_field_type == 0x63):
-		print("UA", end='')
-	elif (ax25_u_control_field_type == 0x87):
-		print("FRMR", end='')
-	elif (ax25_u_control_field_type == 0x03):
-		print("UI", end='')
-	elif (ax25_u_control_field_type == 0xAF):
-		print("XID", end='')
-	elif (ax25_u_control_field_type == 0xE3):
-		print("TEST", end='')
-
-	if (frame_type == 0) or (ax25_u_control_field_type == 3):
-		# This is an Information frame, or an Unnumbered Information frame, so
-		# there is a PID byte.
-		index = index + 1
+	index = 0
+	if (count > 15):
+		valid_header = 1
+		address_extension_bit = 0
+		index = 1
+		subfield_character_index = 0
+		subfield_index = 0
+		print("- AX.25 Decode:")
+		# Print address information
+		while address_extension_bit == 0:
+			working_character = int(frame[index])
+			if (working_character & 0b1) == 1:
+				address_extension_bit = 1
+			working_character = working_character >> 1
+			subfield_character_index = subfield_character_index + 1
+			if (subfield_character_index == 1):
+				if (subfield_index == 0):
+					print("To:", end='')
+				elif (subfield_index == 1):
+					print(", From:", end='')
+				else:
+					print(", Via:", end='')
+			if subfield_character_index < 7:
+				# This is a callsign character
+				if (working_character != 0) and (working_character != 0x20):
+					print(chr(working_character), end='')
+			elif subfield_character_index == 7:
+				# This is the SSID characters
+				# Get bits
+				print('-', end='')
+				print(working_character & 0b1111, end='')
+				if (working_character & 0b10000000):
+					# C or H bit is set
+					print('*', end=' ')
+				# This field is complete
+				subfield_character_index = 0
+				subfield_index = subfield_index + 1
+			index = index + 1
+			if index > count:
+				address_extension_bit = 1
+		# Control and PID fields
 		working_character = frame[index]
-		print(", PID: ", end='')
-		if (working_character == 1):
-			print("ISO 8208", end='')
-		if (working_character == 6):
-			print("Compressed TCP/IP", end='')
-		if (working_character == 7):
-			print("Uncompressed TCP/IP", end='')
-		if (working_character == 8):
-			print("Segmentation Fragment", end='')
-		if (working_character == 0xC3):
-			print("TEXNET", end='')
-		if (working_character == 0xC4):
-			print("Link Quality Protocol", end='')
-		if (working_character == 0xCA):
-			print("Appletalk", end='')
-		if (working_character == 0xCB):
-			print("ARPA Internet Protocol", end='')
-		if (working_character == 0xCC):
-			print("ARPA Address Resolution", end='')
-		if (working_character == 0xCD):
-			print("TheNET", end='')
-		if (working_character == 0xF0):
-			print("No Layer 3", end='')
-		if (working_character == 0xFF):
-			print("Escape", end='')
+		print(", Control: ", end='')
+		poll_final_bit = (working_character & 0x10) >> 4
+		# determine what type of frame this is
+		if (working_character & 1) == 1:
+			# either a Supervisory or Unnumbered frame
+			frame_type = working_character & 3
+		else:
+			# Information frame
+			frame_type = 0
+			ax25_ns = (working_character >> 1) & 7
+			ax25_nr = (working_character >> 5) & 7
 
-	index = index + 1
+		if frame_type == 1:
+			# Supervisory frame
+			ax25_nr = (working_character >> 5) & 7
 
-	# return the index of the start of payload data
-	print(" ")
+		if frame_type == 3:
+			# Unnumbered frame, determine what type
+			ax25_u_control_field_type = working_character & 0xEF
+		else:
+			ax25_u_control_field_type = 0
+
+		if (ax25_u_control_field_type == 0x6F):
+			print("SABME", end='')
+		elif (ax25_u_control_field_type == 0x2F):
+			print("SABM", end='')
+		elif (ax25_u_control_field_type == 0x43):
+			print("DISC", end='')
+		elif (ax25_u_control_field_type == 0x0F):
+			print("DM", end='')
+		elif (ax25_u_control_field_type == 0x63):
+			print("UA", end='')
+		elif (ax25_u_control_field_type == 0x87):
+			print("FRMR", end='')
+		elif (ax25_u_control_field_type == 0x03):
+			print("UI", end='')
+		elif (ax25_u_control_field_type == 0xAF):
+			print("XID", end='')
+		elif (ax25_u_control_field_type == 0xE3):
+			print("TEST", end='')
+
+		if (frame_type == 0) or (ax25_u_control_field_type == 3):
+			# This is an Information frame, or an Unnumbered Information frame, so
+			# there is a PID byte.
+			index = index + 1
+			working_character = frame[index]
+			print(", PID: ", end='')
+			if (working_character == 1):
+				print("ISO 8208", end='')
+			if (working_character == 6):
+				print("Compressed TCP/IP", end='')
+			if (working_character == 7):
+				print("Uncompressed TCP/IP", end='')
+			if (working_character == 8):
+				print("Segmentation Fragment", end='')
+			if (working_character == 0xC3):
+				print("TEXNET", end='')
+			if (working_character == 0xC4):
+				print("Link Quality Protocol", end='')
+			if (working_character == 0xCA):
+				print("Appletalk", end='')
+			if (working_character == 0xCB):
+				print("ARPA Internet Protocol", end='')
+			if (working_character == 0xCC):
+				print("ARPA Address Resolution", end='')
+			if (working_character == 0xCD):
+				print("TheNET", end='')
+			if (working_character == 0xF0):
+				print("No Layer 3", end='')
+			if (working_character == 0xFF):
+				print("Escape", end='')
+
+		index = index + 1
+
+		# return the index of the start of payload data
+		print(" ")
 	return index
 
 def print_frame(frame, time, count):
