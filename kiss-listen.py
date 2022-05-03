@@ -14,6 +14,7 @@ import datetime
 
 def print_ax25_header(frame):
 	count = len(frame)
+	if (count > 15)
 	valid_header = 1
 	address_extension_bit = 0
 	index = 1
