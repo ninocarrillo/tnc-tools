@@ -134,7 +134,10 @@ while(frame_index < len(kiss_frame)):
 	frame_index += 1
 kiss_output_frame = bytearray(FEND) + bytearray(KISS_TYPE_ID) + kiss_output_frame + bytearray(FEND)
 print(kiss_output_frame)
+frame_length = len(kiss_output_frame)
+frame_time = frame_length * 10 / int(sys.argv[2])
+print(frame_time)
 port.write(kiss_output_frame)
 print(port.out_waiting)
-time.sleep(.1)
+time.sleep(frame_time * 1.5)
 GracefulExit(port, 0)
