@@ -135,5 +135,9 @@ while(frame_index < len(kiss_frame)):
 kiss_output_frame = bytearray(FEND) + bytearray(KISS_TYPE_ID) + kiss_output_frame + bytearray(FEND)
 print(kiss_output_frame)
 port.write(kiss_output_frame)
-time.sleep(1)
+bytes_remaining = port.out_waiting
+print(bytes_remaining)
+while bytes_remaining > 0:
+	print(bytes_remaining)
+	bytes_remaining = port.out_waiting
 GracefulExit(port, 0)
