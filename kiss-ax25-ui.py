@@ -1,6 +1,6 @@
 # kiss-ax25-ui
 # Python3
-# Generate a single KISS-encapsulated AX.25 UI frame and sen to the serial port.
+# Generate a single KISS-encapsulated AX.25 UI frame and send to the serial port.
 # Nino Carrillo
 # 24 Feb 2023
 # Exit codes
@@ -13,7 +13,6 @@
 import serial
 import sys
 import time
-
 
 def GracefulExit(port, code):
 	try:
@@ -30,8 +29,8 @@ def StringCallsignToArray(input_string, error_string, error_code):
 	ssid_digits = 0
 	ssid = [0,0]
 	currently_reading = 'callsign'
-	input = bytes(input_string, 'UTF-8')
-	for character in input:
+	input_string = bytes(input_string, 'UTF-8')
+	for character in input_string:
 		if currently_reading == 'callsign':
 			if character == bytes('-', 'UTF-8')[0]:
 				currently_reading = 'ssid'
