@@ -2,12 +2,13 @@
 # Python3
 # Generate a single KISS-encapsulated AX.25 UI frame and sen to the serial port.
 # Nino Carrillo
-# 23 Feb 2023
+# 24 Feb 2023
 # Exit codes
 # 1 Wrong python version
 # 2 Not enough command line arguments
 # 3 Unable to open serial port
 # 4 Source callsign is invalid
+# 5 Destination callsign is invalid
 
 import serial
 import sys
@@ -25,7 +26,6 @@ def GracefulExit(port, code):
 
 def StringCallsignToArray(input_string, error_string, error_code):
 	output = [20, 20, 20, 20, 20, 20, 0]
-
 	callsign_length = 0
 	ssid_digits = 0
 	ssid = [0,0]
@@ -50,7 +50,6 @@ def StringCallsignToArray(input_string, error_string, error_code):
 			ssid[ssid_digits] = character - bytes('0', 'UTF-8')[0]
 			ssid_digits += 1
 			# print(ssid)
-
 	if ssid_digits == 1:
 		ssid = ssid[0]
 	elif ssid_digits == 2:
@@ -68,8 +67,8 @@ if sys.version_info < (3, 0):
 	print("Python version should be 3.x, exiting")
 	sys.exit(1)
 
-if len(sys.argv) < 5:
-	print('Not enough arguments. Usage: python3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <dest call-ssid> <optional payload>')
+if len(sys.argv) < 4:
+	print('Not enough arguments. Usage prototype below. Enclose payload in "double quotes" if it contains whitespace.\r\npython3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <optional dest call-ssid> <optional payload>')
 	sys.exit(2)
 
 try:
@@ -80,8 +79,11 @@ except:
 
 source_callsign = StringCallsignToArray(sys.argv[3], 'Source Callsign or SSID is invalid.', 4)
 
-dest_callsign = StringCallsignToArray(sys.argv[4], 'Destination Callsign or SSID is invalid.', 4)
-
+if len(sys.argv) > 4:
+	dest_callsign = sys.argv[4]
+else:
+	dest_callsign = 'IDENT-0'
+dest_callsign = StringCallsignToArray(dest_callsign, 'Destination Callsign or SSID is invalid.', 5)
 #print(source_callsign)
 #print(dest_callsign)
 
