@@ -20,7 +20,7 @@ def GracefulExit(port, code):
 	except:
 		pass
 	finally:
-		print('Closed port ', port.port)
+		#print('Closed port ', port.port)
 		sys.exit(code)
 
 def StringCallsignToArray(input_string, error_string, error_code):
@@ -82,8 +82,8 @@ source_callsign = StringCallsignToArray(sys.argv[3], 'Source Callsign or SSID is
 
 dest_callsign = StringCallsignToArray(sys.argv[4], 'Destination Callsign or SSID is invalid.', 4)
 
-print(source_callsign)
-print(dest_callsign)
+#print(source_callsign)
+#print(dest_callsign)
 
 FESC = int(0xDB).to_bytes(1,'big')
 FEND = int(0xC0).to_bytes(1,'big')
@@ -117,7 +117,7 @@ try:
 except:
 	payload = bytearray()
 kiss_frame.extend(payload)
-print(kiss_frame)
+#print(kiss_frame)
 
 frame_index = 0
 kiss_output_frame = bytearray()
@@ -133,11 +133,8 @@ while(frame_index < len(kiss_frame)):
 		kiss_output_frame.extend(kiss_byte.to_bytes(1, 'big'))
 	frame_index += 1
 kiss_output_frame = bytearray(FEND) + bytearray(KISS_TYPE_ID) + kiss_output_frame + bytearray(FEND)
-print(kiss_output_frame)
-frame_length = len(kiss_output_frame)
-frame_time = frame_length * 10 / int(sys.argv[2])
-print(frame_time)
+# print(kiss_output_frame)
+frame_time = len(kiss_output_frame) * 10 / int(sys.argv[2])
 port.write(kiss_output_frame)
-print(port.out_waiting)
 time.sleep(frame_time * 1.5)
 GracefulExit(port, 0)
