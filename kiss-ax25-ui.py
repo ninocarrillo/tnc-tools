@@ -11,6 +11,7 @@
 
 import serial
 import sys
+import time
 
 
 def GracefulExit(port, code):
@@ -67,9 +68,8 @@ if sys.version_info < (3, 0):
 	print("Python version should be 3.x, exiting")
 	sys.exit(1)
 
-
 if len(sys.argv) < 5:
-	print('Not enough arguments. Usage: python3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <dest call-ssid> <payload>')
+	print('Not enough arguments. Usage: python3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <dest call-ssid> <optional payload>')
 	sys.exit(2)
 
 try:
@@ -78,35 +78,12 @@ except:
 	print('Unable to open serial port.')
 	sys.exit(3)
 
-print('Opened port', sys.argv[1])
-
 source_callsign = StringCallsignToArray(sys.argv[3], 'Source Callsign or SSID is invalid.', 4)
 
 dest_callsign = StringCallsignToArray(sys.argv[4], 'Destination Callsign or SSID is invalid.', 4)
 
-
 print(source_callsign)
 print(dest_callsign)
-
-GracefulExit(port, 0)
-
-
-try:
-	frame_length = int(sys.argv[4])
-except:
-	print('Frame length argument is not an integer.')
-	GracefulExit(port, 5)
-
-
-print('Frame length = %d' % frame_length)
-
-try:
-	frame_interval = float(sys.argv[5])
-except:
-	print('Frame interval is not a number.')
-	GracefulExit(port, 6)
-
-print('Frame interval = %f' % frame_interval, ' seconds.')
 
 FESC = int(0xDB).to_bytes(1,'big')
 FEND = int(0xC0).to_bytes(1,'big')
@@ -117,35 +94,46 @@ KISS_COMMAND = 0
 KISS_TYPE_ID = (KISS_PORT * 16) + KISS_COMMAND
 KISS_TYPE_ID = KISS_TYPE_ID.to_bytes(1,'big')
 
-for i in range(0, frame_count):
-	kiss_frame = bytearray()
-	#kiss_frame = bytearray(FEND.to_bytes(1,'big'))
-	frame_text = "KISS Frame "
-	kiss_frame +=bytearray(frame_text.encode())
-	frame_text = str(i + 1) + ' '
-	kiss_frame.extend(bytearray(frame_text.encode()))
-	extend_length = frame_length - len(kiss_frame)
-	rand_bytes = bytearray()
-	for j in range(0, extend_length):
-		rand = random.randint(32,126)
-		rand_bytes.extend(bytearray(rand.to_bytes(1,'big')))
-	kiss_frame.extend(rand_bytes)
-	frame_index = 0
-	kiss_output_frame = bytearray()
-	while(frame_index < len(kiss_frame)):
-		kiss_byte = kiss_frame[frame_index]
-		if kiss_byte.to_bytes(1,'big') == FESC:
-			kiss_output_frame.extend(FESC)
-			kiss_output_frame.extend(TFESC)
-		elif kiss_byte.to_bytes(1, 'big') == FEND:
-			kiss_output_frame.extend(FESC)
-			kiss_output_frame.extend(TFEND)
-		else:
-			kiss_output_frame.extend(kiss_byte.to_bytes(1, 'big'))
-		frame_index += 1
-	kiss_output_frame = bytearray(FEND) + bytearray(KISS_TYPE_ID) + kiss_output_frame + bytearray(FEND)
-	print(kiss_output_frame)
-	port.write(kiss_output_frame)
-	time.sleep(frame_interval)
+# Assemble KISS frame:
+kiss_frame = bytearray()
+# Add destination callsign, shifted left one bit:
+for i in range(6):
+	kiss_frame.extend((dest_callsign[i]<<1).to_bytes(1,'big'))
+# Add destination SSID:
+kiss_frame.extend(((dest_callsign[6] & 0xF)<<1).to_bytes(1,'big'))
+# Add source callsign, shifted left one bit:
+for i in range(6):
+	kiss_frame.extend((source_callsign[i]<<1).to_bytes(1,'big'))
+# Add source SSID with Address Extension Bit:
+kiss_frame.extend((((source_callsign[6] & 0xF) << 1) | 1).to_bytes(1,'big'))
 
+# Add Control field for UI:
+kiss_frame.extend((0x03).to_bytes(1,'big'))
+# Add PID for No Layer 3:
+kiss_frame.extend((0xF0).to_bytes(1,'big'))
+# Add payload:
+try:
+	payload = bytes(sys.argv[5], 'UTF-8')
+except:
+	payload = bytearray()
+kiss_frame.extend(payload)
+print(kiss_frame)
+
+frame_index = 0
+kiss_output_frame = bytearray()
+while(frame_index < len(kiss_frame)):
+	kiss_byte = kiss_frame[frame_index]
+	if kiss_byte.to_bytes(1,'big') == FESC:
+		kiss_output_frame.extend(FESC)
+		kiss_output_frame.extend(TFESC)
+	elif kiss_byte.to_bytes(1, 'big') == FEND:
+		kiss_output_frame.extend(FESC)
+		kiss_output_frame.extend(TFEND)
+	else:
+		kiss_output_frame.extend(kiss_byte.to_bytes(1, 'big'))
+	frame_index += 1
+kiss_output_frame = bytearray(FEND) + bytearray(KISS_TYPE_ID) + kiss_output_frame + bytearray(FEND)
+print(kiss_output_frame)
+port.write(kiss_output_frame)
+time.sleep(1)
 GracefulExit(port, 0)
