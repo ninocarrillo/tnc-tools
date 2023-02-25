@@ -88,7 +88,7 @@ elif command_string == 'SETBCNINT':
 	try:
 		value_string = sys.argv[3]
 	except:
-		# print('Not enough arguments for SETBCNINT command.')
+		print('Not enough arguments for SETBCNINT command.')
 		sys.exit(2)
 	value_int = int(value_string)
 	# print(value)
@@ -108,10 +108,43 @@ elif command_string == 'GETVER':
 	value.extend(int(0).to_bytes(1,'big'))
 	get_response = 'yes'
 elif command_string == 'GETALL':
-		# print('get all')
-		command.extend(int(0xB).to_bytes(1,'big'))
-		value.extend(int(0).to_bytes(1,'big'))
-		get_response = 'yes'
+	# print('get all')
+	command.extend(int(0xB).to_bytes(1,'big'))
+	value.extend(int(0).to_bytes(1,'big'))
+	get_response = 'yes'
+elif command_string == 'STOPTX':
+	# print('stop tx')
+	command.extend(int(0x9).to_bytes(1,'big'))
+	command.extend(int(0x0).to_bytes(1,'big'))
+	get_response = 'no'
+elif command_string == 'SETPERSIST':
+	print('set persist')
+	command.extend(int(0x2).to_bytes(1,'big'))
+	get_response = 'no'
+	try:
+		value_string = sys.argv[3]
+	except:
+		print('Not enough arguments for SETPERSIST command.')
+		sys.exit(2)
+	value_int = int(value_string)
+	# print(value)
+	if value_int < 0 or value_int > 255:
+		print('Invalid value for SETPERSIST command. Must be 0 to 255.')
+		sys.exit(5)
+elif command_string == 'SETSLOT':
+	print('set slot')
+	command.extend(int(0x3).to_bytes(1,'big'))
+	get_response = 'no'
+	try:
+		value_string = sys.argv[3]
+	except:
+		print('Not enough arguments for SETSLOT command.')
+		sys.exit(2)
+	value_int = int(value_string)
+	# print(value)
+	if value_int < 0 or value_int > 255:
+		print('Invalid value for SETSLOT command. Must be 0 to 255.')
+		sys.exit(5)
 else:
 	print('Unrecognized command.')
 	sys.exit(4)
