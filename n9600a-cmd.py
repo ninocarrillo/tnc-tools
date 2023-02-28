@@ -49,7 +49,7 @@ if sys.version_info < (3, 0):
 	print("Python version should be 3.x, exiting")
 	sys.exit(1)
 
-if len(sys.argv) < 2:
+if len(sys.argv) < 3:
 	print('Not enough arguments. Usage prototype below.\r\npython3 n9600a-cmd.py <serial device> <command> <optional value>')
 	sys.exit(2)
 
