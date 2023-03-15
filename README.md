@@ -10,4 +10,4 @@ Utilities for interfacing with N9600A NinoTNC and other generic KISS TNCs connec
 
 `python3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <optional dest call-ssid> <optional payload>`
 
-`python3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <dest call-ssid> <frame count> <payload text> <payload length> <frame interval>'
+`python3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <dest call-ssid> <frame count> <payload text> <payload length> <frame interval>`
