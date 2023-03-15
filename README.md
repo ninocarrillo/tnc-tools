@@ -63,7 +63,7 @@ GFSK 9600 IL2P -120dBm 1 ~EBB&P4"PPhaB'|%<kSHcpFI^i;}
 ## kiss-ax25-ui.py
 Usage: `python3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <optional dest call-ssid> <optional payload>`
 
-Generate a single AX.25 un-numbered information packet, like an APRS packet, and send it to the specified serial port with KISS encapsulation. Only the serial device, baud rate, and source callsign arguments are requred. Destination callsign will default to "IDENT-0" if omitted. Payload argument should be enclosed in double quotes if it contains whitespace. 
+Generate a single AX.25 un-numbered information packet, like an APRS packet, and send it to the specified serial port with KISS encapsulation. Only the serial device, baud rate, and source callsign arguments are requred. Destination callsign will default to "IDENT-0" if omitted. Payload argument should be enclosed in double quotes if it contains whitespace. This utility is handy for setting the source callsign on a NinoTNC, send one packet from your callsign and the TNC will use it for subsequent test packets when the TEST_TX button is pressed.
 
 Minimum argument example:
 ````
