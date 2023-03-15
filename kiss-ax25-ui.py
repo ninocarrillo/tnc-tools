@@ -29,6 +29,7 @@ def StringCallsignToArray(input_string, error_string, error_code):
 	ssid_digits = 0
 	ssid = [0,0]
 	currently_reading = 'callsign'
+	input_string = input_string.upper()
 	input_string = bytes(input_string, 'UTF-8')
 	for character in input_string:
 		if currently_reading == 'callsign':
