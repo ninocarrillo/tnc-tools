@@ -50,7 +50,18 @@ if sys.version_info < (3, 0):
 	sys.exit(1)
 
 if len(sys.argv) < 3:
-	print('Not enough arguments. Usage prototype below.\r\npython3 n9600a-cmd.py <serial device> <command> <optional value>')
+	print(f'Not enough arguments. Usage prototype below.\r\npython3 n9600a-cmd.py <serial device> <command> <optional value>')
+	print(f'Available commands:')
+	print(f'CLRSERNO               : Erases the stored TNC serial number. Perform before SETSERNO.')
+	print(f'SETSERNO xxxxxxxx      : Sets the TNC serial number, value is 8 ASCII characters.')
+	print(f'GETSERNO               : Queries and displays the TNC serial number.')
+	print(f'SETBCNINT nnn          : Sets the beacon interval, value is minutes 0 to 255. 0 disables.')
+	print(f'GETVER                 : Queries and displays the TNC firmware version.')
+	print(f'STOPTX                 : Stop the current transmission and flush queues.')
+	print(f'GETALL                 : Dump diagnostic data.')
+	print(f'SETPERSIST nnn         : Set CSMA persistance value, 0 to 255.')
+	print(f'SETSLOT nnn            : Set CSMA slot time in 10mS units, 0 to 255.')
+	
 	sys.exit(2)
 
 command_string = sys.argv[2].upper()
@@ -77,8 +88,6 @@ elif command_string == "CLRSERNO":
 	# print(command)
 	value = bytearray([0,0,0,0,0,0,0,0])
 	# print(value)
-elif command_string == 'STOPTX':
-	print('stop tx')
 elif command_string == 'SETBCNINT':
 	# print('set bcn int')
 	command.extend(int(0x9).to_bytes(1,'big'))
@@ -157,7 +166,6 @@ except:
 
 kiss_output_frame = AssembleKISSFrame(command + value)
 
-# print(kiss_output_frame)
 frame_time = len(kiss_output_frame) * 10.0 / 57600.0
 port.write(kiss_output_frame)
 
@@ -184,11 +192,6 @@ if get_response == 'yes':
 				elif ord(input_data) == FEND:
 					if len(kiss_frame) > 0:
 						frame_count += 1
-						# t = datetime.datetime.now()
-						#kiss_frame_time = time.strftime("%H:%M:%S", t)
-						# print(kiss_frame)
-						# print_frame(kiss_frame, t, frame_count)
-						# header_length = print_ax25_header(kiss_frame)
 						kiss_frame_string = ""
 						for character in kiss_frame[1:]:
 							kiss_frame_string += chr(character)
