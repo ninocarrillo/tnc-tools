@@ -73,7 +73,7 @@ if sys.version_info < (3, 0):
 	sys.exit(1)
 
 if len(sys.argv) < 9:
-	print('Not enough arguments. Usage prototype below.\r\npython3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <dest call-ssid> <frame count> <payload text> <payload length> <frame interval>')
+	print('Not enough arguments. Usage prototype below.\r\npython3 kiss-ax25-ui-batch.py <serial device> <baud rate> <src call-ssid> <dest call-ssid> <frame count> <payload text> <payload length> <frame interval>')
 	sys.exit(2)
 
 try:
