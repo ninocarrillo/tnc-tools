@@ -10,8 +10,9 @@
 # 4 Source callsign is invalid
 # 5 Destination callsign is invalid
 # 6 Frame count is invalid
-# 7 Payload length is invalid
-# 8 Frame interval is invalid
+# 7 Payload text is invalid
+# 8 Payload length is invalid
+# 9 Frame interval is invalid
 
 import serial
 import sys
@@ -71,8 +72,8 @@ if sys.version_info < (3, 0):
 	print("Python version should be 3.x, exiting")
 	sys.exit(1)
 
-if len(sys.argv) < 7:
-	print('Not enough arguments. Usage prototype below.\r\npython3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <dest call-ssid> <frame count> <payload length> <frame interval>')
+if len(sys.argv) < 9:
+	print('Not enough arguments. Usage prototype below.\r\npython3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <dest call-ssid> <frame count> <payload text> <payload length> <frame interval>')
 	sys.exit(2)
 
 try:
@@ -94,16 +95,22 @@ except:
 	GracefulExit(port, 6)
 	
 try:
-	payload_length = int(sys.argv[6])
+	payload_text = sys.argv[6]
 except:
-	print('Payload length argument is not an integer.')
+	print('Payload text is invalid.')
 	GracefulExit(port, 7)
 	
 try:
-	frame_interval = float(sys.argv[7])
+	target_payload_length = int(sys.argv[7])
+except:
+	print('Payload length argument is not an integer.')
+	GracefulExit(port, 8)
+	
+try:
+	frame_interval = float(sys.argv[8])
 except:
 	print('Frame interval is not a number.')
-	GracefulExit(port, 8)
+	GracefulExit(port, 9)
 
 FESC = int(0xDB).to_bytes(1,'big')
 FEND = int(0xC0).to_bytes(1,'big')
@@ -119,13 +126,13 @@ for i in range(0, frame_count):
 	# Assemble KISS frame:
 	kiss_frame = bytearray()
 	# Add destination callsign, shifted left one bit:
-	for i in range(6):
-		kiss_frame.extend((dest_callsign[i]<<1).to_bytes(1,'big'))
+	for j in range(6):
+		kiss_frame.extend((dest_callsign[j]<<1).to_bytes(1,'big'))
 	# Add destination SSID:
 	kiss_frame.extend(((dest_callsign[6] & 0xF)<<1).to_bytes(1,'big'))
 	# Add source callsign, shifted left one bit:
-	for i in range(6):
-		kiss_frame.extend((source_callsign[i]<<1).to_bytes(1,'big'))
+	for k in range(6):
+		kiss_frame.extend((source_callsign[k]<<1).to_bytes(1,'big'))
 	# Add source SSID with Address Extension Bit:
 	kiss_frame.extend((((source_callsign[6] & 0xF) << 1) | 1).to_bytes(1,'big'))
 
@@ -134,14 +141,28 @@ for i in range(0, frame_count):
 	# Add PID for No Layer 3:
 	kiss_frame.extend((0xF0).to_bytes(1,'big'))
 	
+
+	# save the length of the kiss frame for payload length computations later
+	payload_length = len(kiss_frame)
 	
-	# Add payload:
-	payload = bytearray()
-	for j in range(0, payload_length):
-		rand = random.randint(32,126)
-		payload.extend(bytearray(rand.to_bytes(1,'big')))
-	kiss_frame.extend(payload)
+
+	#kiss_frame.extend(payload)
 	#print(kiss_frame)
+	payload = bytearray(payload_text, 'UTF-8')
+	kiss_frame.extend(payload)
+	kiss_frame.extend(bytearray(str(i), 'UTF-8'))
+	kiss_frame.extend(bytearray(" ", 'UTF-8'))
+	
+	payload_length = len(kiss_frame) - payload_length
+	#print(payload_length)
+
+	# Pad payload to specified length:
+	if payload_length < target_payload_length:
+		payload = bytearray()
+		for j in range(0, target_payload_length - payload_length):
+			rand = random.randint(32,126)
+			payload.extend(bytearray(rand.to_bytes(1,'big')))
+		kiss_frame.extend(payload)
 
 	frame_index = 0
 	kiss_output_frame = bytearray()
