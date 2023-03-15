@@ -1,5 +1,5 @@
 # tnc-tools
-Utilities for interfacing with N9600A NinoTNC and other generic KISS TNCs connected over serial port.
+Utilities for interfacing with N9600A NinoTNC and other generic KISS TNCs connected over serial port. I use these tools for testing and validating TNCs on the bench.
 # Requirements
 - Python3
 - Pyserial
