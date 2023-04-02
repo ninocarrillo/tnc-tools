@@ -150,7 +150,7 @@ for i in range(0, frame_count):
 	#print(kiss_frame)
 	payload = bytearray(payload_text, 'UTF-8')
 	kiss_frame.extend(payload)
-	kiss_frame.extend(bytearray(str(i), 'UTF-8'))
+	kiss_frame.extend(bytearray(str(i + 1), 'UTF-8'))
 	kiss_frame.extend(bytearray(" ", 'UTF-8'))
 	
 	payload_length = len(kiss_frame) - payload_length
