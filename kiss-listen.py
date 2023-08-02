@@ -57,6 +57,7 @@ def print_ax25_header(frame):
 		# Control and PID fields
 		working_character = frame[index]
 		print(", Control: ", end='')
+		print(f'{hex(working_character)} ', end='')
 		poll_final_bit = (working_character & 0x10) >> 4
 		# determine what type of frame this is
 		if (working_character & 1) == 1:
@@ -103,6 +104,7 @@ def print_ax25_header(frame):
 			index = index + 1
 			working_character = frame[index]
 			print(", PID: ", end='')
+			print(f'{hex(working_character)} ', end='')
 			if (working_character == 1):
 				print("ISO 8208", end='')
 			if (working_character == 6):
@@ -117,12 +119,12 @@ def print_ax25_header(frame):
 				print("Link Quality Protocol", end='')
 			if (working_character == 0xCA):
 				print("Appletalk", end='')
-			if (working_character == 0xCB):
-				print("ARPA Internet Protocol", end='')
 			if (working_character == 0xCC):
-				print("ARPA Address Resolution", end='')
+				print("ARPA Internet Protocol", end='')
 			if (working_character == 0xCD):
-				print("TheNET", end='')
+				print("ARPA Address Resolution", end='')
+			if (working_character == 0xCF):
+				print("TheNET (NET/ROM)", end='')
 			if (working_character == 0xF0):
 				print("No Layer 3", end='')
 			if (working_character == 0xFF):
