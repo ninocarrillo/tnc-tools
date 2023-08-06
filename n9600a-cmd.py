@@ -61,6 +61,7 @@ if len(sys.argv) < 3:
 	print(f'GETALL                 : Dump diagnostic data.')
 	print(f'SETPERSIST nnn         : Set CSMA persistance value, 0 to 255.')
 	print(f'SETSLOT nnn            : Set CSMA slot time in 10mS units, 0 to 255.')
+	print(f'SETTXD nnn             : Set TX_DELAY in 10mS units, 0 to 255, if TX_DELAY pot set to zero.')
 	
 	sys.exit(2)
 
@@ -153,6 +154,20 @@ elif command_string == 'SETSLOT':
 	# print(value)
 	if value_int < 0 or value_int > 255:
 		print('Invalid value for SETSLOT command. Must be 0 to 255.')
+		sys.exit(5)
+elif command_string == 'SETTXD':
+	print('set tx delay')
+	command.extend(int(0x1).to_bytes(1,'big'))
+	get_response = 'no'
+	try:
+		value_string = sys.argv[3]
+	except:
+		print('Not enough arguments for SETTXD command.')
+		sys.exit(2)
+	value_int = int(value_string)
+	# print(value)
+	if value_int < 0 or value_int > 255:
+		print('Invalid value for SETTXD command. Must be 0 to 255.')
 		sys.exit(5)
 else:
 	print('Unrecognized command.')
