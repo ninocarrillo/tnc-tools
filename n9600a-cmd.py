@@ -94,36 +94,33 @@ elif command_string == 'SETBCNINT':
 	command.extend(int(0x9).to_bytes(1,'big'))
 	command.extend(int(0xF0).to_bytes(1,'big'))
 	get_response = 'no'
-	# print(command)
 	try:
 		value_string = sys.argv[3]
 	except:
 		print('Not enough arguments for SETBCNINT command.')
 		sys.exit(2)
 	value_int = int(value_string)
-	# print(value)
 	if value_int < 0 or value_int > 255:
 		print('Invalid value for SETBCNINT command. Must be 0 to 255.')
 		sys.exit(5)
 	value.extend(value_int.to_bytes(1,'big'))
-	# print(value)
 elif command_string == 'GETSERNO':
-	# print('get serial number')
+	print('get serial number')
 	command.extend(int(0xE).to_bytes(1,'big'))
 	value.extend(int(0).to_bytes(1,'big'))
 	get_response = 'yes'
 elif command_string == 'GETVER':
-	# print('get firmware version')
+	print('get firmware version')
 	command.extend(int(0x8).to_bytes(1,'big'))
 	value.extend(int(0).to_bytes(1,'big'))
 	get_response = 'yes'
 elif command_string == 'GETALL':
-	# print('get all')
+	print('get all')
 	command.extend(int(0xB).to_bytes(1,'big'))
 	value.extend(int(0).to_bytes(1,'big'))
 	get_response = 'yes'
 elif command_string == 'STOPTX':
-	# print('stop tx')
+	print('stop tx')
 	command.extend(int(0x9).to_bytes(1,'big'))
 	command.extend(int(0x0).to_bytes(1,'big'))
 	get_response = 'no'
@@ -137,10 +134,10 @@ elif command_string == 'SETPERSIST':
 		print('Not enough arguments for SETPERSIST command.')
 		sys.exit(2)
 	value_int = int(value_string)
-	# print(value)
 	if value_int < 0 or value_int > 255:
 		print('Invalid value for SETPERSIST command. Must be 0 to 255.')
 		sys.exit(5)
+	value.extend(int(value_int).to_bytes(1,'big'))
 elif command_string == 'SETSLOT':
 	print('set slot')
 	command.extend(int(0x3).to_bytes(1,'big'))
@@ -151,10 +148,10 @@ elif command_string == 'SETSLOT':
 		print('Not enough arguments for SETSLOT command.')
 		sys.exit(2)
 	value_int = int(value_string)
-	# print(value)
 	if value_int < 0 or value_int > 255:
 		print('Invalid value for SETSLOT command. Must be 0 to 255.')
 		sys.exit(5)
+	value.extend(int(value_int).to_bytes(1,'big'))
 elif command_string == 'SETTXD':
 	print('set tx delay')
 	command.extend(int(0x1).to_bytes(1,'big'))
@@ -165,10 +162,10 @@ elif command_string == 'SETTXD':
 		print('Not enough arguments for SETTXD command.')
 		sys.exit(2)
 	value_int = int(value_string)
-	# print(value)
 	if value_int < 0 or value_int > 255:
 		print('Invalid value for SETTXD command. Must be 0 to 255.')
 		sys.exit(5)
+	value.extend(int(value_int).to_bytes(1,'big'))
 else:
 	print('Unrecognized command.')
 	sys.exit(4)
@@ -180,6 +177,7 @@ except:
 	sys.exit(3)
 
 kiss_output_frame = AssembleKISSFrame(command + value)
+print(kiss_output_frame)
 
 frame_time = len(kiss_output_frame) * 10.0 / 57600.0
 port.write(kiss_output_frame)
