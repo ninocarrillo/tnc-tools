@@ -201,7 +201,7 @@ else:
 	sys.exit(4)
 
 try:
-	port = serial.Serial(sys.argv[1], baudrate=sys.argv[2], bytesize=8, parity='N', stopbits=1, xonxoff=0, rtscts=0, timeout=3)
+	port = serial.Serial(sys.argv[1], baudrate=int(sys.argv[2]), bytesize=8, parity='N', stopbits=1, xonxoff=0, rtscts=0, timeout=3)
 except:
 	print('Unable to open serial port.')
 	sys.exit(3)
@@ -209,7 +209,7 @@ except:
 kiss_output_frame = AssembleKISSFrame(command + value)
 print(" ".join(hex(b) for b in kiss_output_frame))
 
-frame_time = len(kiss_output_frame) * 10.0 / 57600.0
+frame_time = len(kiss_output_frame) * 10.0 / float(sys.argv[2])
 port.write(kiss_output_frame)
 
 if get_response == 'yes':
