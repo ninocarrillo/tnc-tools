@@ -166,6 +166,20 @@ elif command_string == 'SETTXD':
 		print('Invalid value for SETTXD command. Must be 0 to 255.')
 		sys.exit(5)
 	value.extend(int(value_int).to_bytes(1,'big'))
+elif command_string == 'SETHW':
+	print('set hardware')
+	command.extend(int(0x6).to_bytes(1,'big'))
+	get_response = 'no'
+	try:
+		value_string = sys.argv[4]
+	except:
+		print('Not enough arguments for single byte SETHW command.')
+		sys.exit(2)
+	value_int = int(value_string)
+	if value_int < 0 or value_int > 255:
+		print('Invalid value for single byte SETHW command. Must be 0 to 255.')
+		sys.exit(5)
+	value.extend(int(value_int).to_bytes(1,'big'))
 else:
 	print('Unrecognized command.')
 	sys.exit(4)
