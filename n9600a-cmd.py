@@ -207,7 +207,7 @@ except:
 	sys.exit(3)
 
 kiss_output_frame = AssembleKISSFrame(command + value)
-print(kiss_output_frame)
+print(" ".join(hex(b) for b in kiss_output_frame))
 
 frame_time = len(kiss_output_frame) * 10.0 / 57600.0
 port.write(kiss_output_frame)
