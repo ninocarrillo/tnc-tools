@@ -49,8 +49,8 @@ if sys.version_info < (3, 0):
 	print("Python version should be 3.x, exiting")
 	sys.exit(1)
 
-if len(sys.argv) < 3:
-	print(f'Not enough arguments. Usage prototype below.\r\npython3 n9600a-cmd.py <serial device> <command> <optional value>')
+if len(sys.argv) < 4:
+	print(f'Not enough arguments. Usage prototype below.\r\npython3 n9600a-cmd.py <serial device> <baud> <command> <optional value>')
 	print(f'Available commands:')
 	print(f'CLRSERNO               : Erases the stored TNC serial number. Perform before SETSERNO.')
 	print(f'SETSERNO xxxxxxxx      : Sets the TNC serial number, value is 8 ASCII characters.')
@@ -65,7 +65,7 @@ if len(sys.argv) < 3:
 	
 	sys.exit(2)
 
-command_string = sys.argv[2].upper()
+command_string = sys.argv[3].upper()
 command = bytearray()
 value = bytearray()
 get_response = 'no'
@@ -74,7 +74,7 @@ if command_string == 'SETSERNO':
 	get_response = 'no'
 	# print(command)
 	try:
-		value_string = sys.argv[3]
+		value_string = sys.argv[4]
 	except:
 		print('Not enough arguments for SETSERNO command.')
 		sys.exit(2)
@@ -95,7 +95,7 @@ elif command_string == 'SETBCNINT':
 	command.extend(int(0xF0).to_bytes(1,'big'))
 	get_response = 'no'
 	try:
-		value_string = sys.argv[3]
+		value_string = sys.argv[4]
 	except:
 		print('Not enough arguments for SETBCNINT command.')
 		sys.exit(2)
@@ -129,7 +129,7 @@ elif command_string == 'SETPERSIST':
 	command.extend(int(0x2).to_bytes(1,'big'))
 	get_response = 'no'
 	try:
-		value_string = sys.argv[3]
+		value_string = sys.argv[4]
 	except:
 		print('Not enough arguments for SETPERSIST command.')
 		sys.exit(2)
@@ -143,7 +143,7 @@ elif command_string == 'SETSLOT':
 	command.extend(int(0x3).to_bytes(1,'big'))
 	get_response = 'no'
 	try:
-		value_string = sys.argv[3]
+		value_string = sys.argv[4]
 	except:
 		print('Not enough arguments for SETSLOT command.')
 		sys.exit(2)
@@ -157,7 +157,7 @@ elif command_string == 'SETTXD':
 	command.extend(int(0x1).to_bytes(1,'big'))
 	get_response = 'no'
 	try:
-		value_string = sys.argv[3]
+		value_string = sys.argv[4]
 	except:
 		print('Not enough arguments for SETTXD command.')
 		sys.exit(2)
@@ -171,7 +171,7 @@ else:
 	sys.exit(4)
 
 try:
-	port = serial.Serial(sys.argv[1], baudrate=57600, bytesize=8, parity='N', stopbits=1, xonxoff=0, rtscts=0, timeout=3)
+	port = serial.Serial(sys.argv[1], baudrate=sys.argv[2], bytesize=8, parity='N', stopbits=1, xonxoff=0, rtscts=0, timeout=3)
 except:
 	print('Unable to open serial port.')
 	sys.exit(3)
