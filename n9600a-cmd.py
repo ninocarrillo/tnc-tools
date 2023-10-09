@@ -49,8 +49,8 @@ if sys.version_info < (3, 0):
 	print("Python version should be 3.x, exiting")
 	sys.exit(1)
 
-if len(sys.argv) < 3:
-	print(f'Not enough arguments. Usage prototype below.\r\npython3 n9600a-cmd.py <serial device> <command> <optional value>')
+if len(sys.argv) < 4:
+	print(f'Not enough arguments. Usage prototype below.\r\npython3 n9600a-cmd.py <serial device> <baud> <command> <optional value>')
 	print(f'Available commands:')
 	print(f'CLRSERNO               : Erases the stored TNC serial number. Perform before SETSERNO.')
 	print(f'SETSERNO xxxxxxxx      : Sets the TNC serial number, value is 8 ASCII characters.')
@@ -62,10 +62,12 @@ if len(sys.argv) < 3:
 	print(f'SETPERSIST nnn         : Set CSMA persistance value, 0 to 255.')
 	print(f'SETSLOT nnn            : Set CSMA slot time in 10mS units, 0 to 255.')
 	print(f'SETTXD nnn             : Set TX_DELAY in 10mS units, 0 to 255, if TX_DELAY pot set to zero.')
+	print(f'SETTXTAIL nnn          : Set TX_TAIL in 10mS units, 0 to 255. Not on NinoTNC.')
+	print(f'SETHW nnn              : Issue SetHardware KISS command to the modem, passing one byte to it.')
 	
 	sys.exit(2)
 
-command_string = sys.argv[2].upper()
+command_string = sys.argv[3].upper()
 command = bytearray()
 value = bytearray()
 get_response = 'no'
@@ -74,7 +76,7 @@ if command_string == 'SETSERNO':
 	get_response = 'no'
 	# print(command)
 	try:
-		value_string = sys.argv[3]
+		value_string = sys.argv[4]
 	except:
 		print('Not enough arguments for SETSERNO command.')
 		sys.exit(2)
@@ -95,7 +97,7 @@ elif command_string == 'SETBCNINT':
 	command.extend(int(0xF0).to_bytes(1,'big'))
 	get_response = 'no'
 	try:
-		value_string = sys.argv[3]
+		value_string = sys.argv[4]
 	except:
 		print('Not enough arguments for SETBCNINT command.')
 		sys.exit(2)
@@ -129,7 +131,7 @@ elif command_string == 'SETPERSIST':
 	command.extend(int(0x2).to_bytes(1,'big'))
 	get_response = 'no'
 	try:
-		value_string = sys.argv[3]
+		value_string = sys.argv[4]
 	except:
 		print('Not enough arguments for SETPERSIST command.')
 		sys.exit(2)
@@ -143,7 +145,7 @@ elif command_string == 'SETSLOT':
 	command.extend(int(0x3).to_bytes(1,'big'))
 	get_response = 'no'
 	try:
-		value_string = sys.argv[3]
+		value_string = sys.argv[4]
 	except:
 		print('Not enough arguments for SETSLOT command.')
 		sys.exit(2)
@@ -157,7 +159,7 @@ elif command_string == 'SETTXD':
 	command.extend(int(0x1).to_bytes(1,'big'))
 	get_response = 'no'
 	try:
-		value_string = sys.argv[3]
+		value_string = sys.argv[4]
 	except:
 		print('Not enough arguments for SETTXD command.')
 		sys.exit(2)
@@ -166,20 +168,48 @@ elif command_string == 'SETTXD':
 		print('Invalid value for SETTXD command. Must be 0 to 255.')
 		sys.exit(5)
 	value.extend(int(value_int).to_bytes(1,'big'))
+elif command_string == 'SETTXTAIL':
+	print('set tx tail')
+	command.extend(int(0x4).to_bytes(1,'big'))
+	get_response = 'no'
+	try:
+		value_string = sys.argv[4]
+	except:
+		print('Not enough arguments for SETTXTAIL command.')
+		sys.exit(2)
+	value_int = int(value_string)
+	if value_int < 0 or value_int > 255:
+		print('Invalid value for SETTXTAIL command. Must be 0 to 255.')
+		sys.exit(5)
+	value.extend(int(value_int).to_bytes(1,'big'))
+elif command_string == 'SETHW':
+	print('set hardware')
+	command.extend(int(0x6).to_bytes(1,'big'))
+	get_response = 'no'
+	try:
+		value_string = sys.argv[4]
+	except:
+		print('Not enough arguments for single byte SETHW command.')
+		sys.exit(2)
+	value_int = int(value_string)
+	if value_int < 0 or value_int > 255:
+		print('Invalid value for single byte SETHW command. Must be 0 to 255.')
+		sys.exit(5)
+	value.extend(int(value_int).to_bytes(1,'big'))
 else:
 	print('Unrecognized command.')
 	sys.exit(4)
 
 try:
-	port = serial.Serial(sys.argv[1], baudrate=57600, bytesize=8, parity='N', stopbits=1, xonxoff=0, rtscts=0, timeout=3)
+	port = serial.Serial(sys.argv[1], baudrate=int(sys.argv[2]), bytesize=8, parity='N', stopbits=1, xonxoff=0, rtscts=0, timeout=3)
 except:
 	print('Unable to open serial port.')
 	sys.exit(3)
 
 kiss_output_frame = AssembleKISSFrame(command + value)
-print(kiss_output_frame)
+print(" ".join(hex(b) for b in kiss_output_frame))
 
-frame_time = len(kiss_output_frame) * 10.0 / 57600.0
+frame_time = len(kiss_output_frame) * 10.0 / float(sys.argv[2])
 port.write(kiss_output_frame)
 
 if get_response == 'yes':
