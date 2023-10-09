@@ -29,7 +29,7 @@ def GracefulExit(port, code):
 		sys.exit(code)
 
 def StringCallsignToArray(input_string, error_string, error_code):
-	output = [20, 20, 20, 20, 20, 20, 0]
+	output = [0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0]
 	callsign_length = 0
 	ssid_digits = 0
 	ssid = [0,0]
