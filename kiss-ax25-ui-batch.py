@@ -29,7 +29,7 @@ def GracefulExit(port, code):
 		sys.exit(code)
 
 def StringCallsignToArray(input_string, error_string, error_code):
-	output = [0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0]
+	output = [0, 0, 0, 0, 0, 0, 0]
 	callsign_length = 0
 	ssid_digits = 0
 	ssid = [0,0]
@@ -65,7 +65,9 @@ def StringCallsignToArray(input_string, error_string, error_code):
 		ssid = 16
 	if ssid < 0:
 		ssid = 0
-	output[6] = ssid
+	output[callsign_length] = ssid
+	callsign_length += 1
+	output = output[0:callsign_length]
 	return output
 
 if sys.version_info < (3, 0):
@@ -126,21 +128,20 @@ for i in range(0, frame_count):
 	# Assemble KISS frame:
 	kiss_frame = bytearray()
 	# Add destination callsign, shifted left one bit:
-	for j in range(6):
+	for j in range(len(dest_callsign) - 1):
 		kiss_frame.extend((dest_callsign[j]<<1).to_bytes(1,'big'))
 	# Add destination SSID:
-	kiss_frame.extend(((dest_callsign[6] & 0xF)<<1).to_bytes(1,'big'))
+	kiss_frame.extend(((dest_callsign[j] & 0xF)<<1).to_bytes(1,'big'))
 	# Add source callsign, shifted left one bit:
-	for k in range(6):
-		kiss_frame.extend((source_callsign[k]<<1).to_bytes(1,'big'))
+	for j in range(len(source_callsign) - 1):
+		kiss_frame.extend((source_callsign[j]<<1).to_bytes(1,'big'))
 	# Add source SSID with Address Extension Bit:
-	kiss_frame.extend((((source_callsign[6] & 0xF) << 1) | 1).to_bytes(1,'big'))
+	kiss_frame.extend((((source_callsign[j] & 0xF) << 1) | 1).to_bytes(1,'big'))
 
 	# Add Control field for UI:
 	kiss_frame.extend((0x03).to_bytes(1,'big'))
 	# Add PID for No Layer 3:
 	kiss_frame.extend((0xF0).to_bytes(1,'big'))
-	
 
 	# save the length of the kiss frame for payload length computations later
 	payload_length = len(kiss_frame)
