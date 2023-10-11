@@ -190,4 +190,5 @@ for i in range(0, frame_count):
 	frame_time = len(kiss_output_frame) * 10 / int(sys.argv[2])
 	port.write(kiss_output_frame)
 	time.sleep(frame_interval)
+print('\nDone.')
 GracefulExit(port, 0)
