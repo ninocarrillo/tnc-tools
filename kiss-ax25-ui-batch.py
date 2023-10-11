@@ -140,10 +140,6 @@ for i in range(0, frame_count):
 	kiss_frame.extend((0x03).to_bytes(1,'big'))
 	# Add PID for No Layer 3:
 	kiss_frame.extend((0xF0).to_bytes(1,'big'))
-	
-	print(f'\nFrame {i} content bytes:')
-	for character in kiss_frame:
-		print(hex(character), end=' ')
 
 	# save the length of the kiss frame for payload length computations later
 	payload_length = len(kiss_frame)
@@ -165,6 +161,16 @@ for i in range(0, frame_count):
 			rand = random.randint(32,126)
 			payload.extend(bytearray(rand.to_bytes(1,'big')))
 		kiss_frame.extend(payload)
+	
+	print(f'\nFrame {i} content bytes:')
+	character_counter = 0
+	for character in kiss_frame:
+		print(hex(character), end=' ')
+		character_counter += 1
+		if character_counter == 16:
+			character_counter = 0
+			print(f'\n', end='')
+	sys.stdout.flush()
 
 	frame_index = 0
 	kiss_output_frame = bytearray()
