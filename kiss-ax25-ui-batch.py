@@ -130,7 +130,7 @@ for i in range(0, frame_count):
 	for j in range(6):
 		kiss_frame.extend((dest_callsign[j]<<1).to_bytes(1,'big'))
 	# Add destination SSID with CRR bits set
-	kiss_frame.extend((((dest_callsign[6] & 0xF)<<1) | 0xE).to_bytes(1,'big'))
+	kiss_frame.extend((((dest_callsign[6] & 0xF)<<1) | 0xE0).to_bytes(1,'big'))
 	# Add source callsign, shifted left one bit:
 	for k in range(6):
 		kiss_frame.extend((source_callsign[k]<<1).to_bytes(1,'big'))
