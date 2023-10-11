@@ -85,6 +85,7 @@ except:
 source_callsign = StringCallsignToArray(sys.argv[3], 'Source Callsign or SSID is invalid.', 4)
 
 dest_callsign = StringCallsignToArray(sys.argv[4], 'Destination Callsign or SSID is invalid.', 5)
+
 #print(source_callsign)
 #print(dest_callsign)
 
@@ -128,13 +129,13 @@ for i in range(0, frame_count):
 	# Add destination callsign, shifted left one bit:
 	for j in range(6):
 		kiss_frame.extend((dest_callsign[j]<<1).to_bytes(1,'big'))
-	# Add destination SSID:
-	kiss_frame.extend(((dest_callsign[6] & 0xF)<<1).to_bytes(1,'big'))
+	# Add destination SSID with CRR bits set
+	kiss_frame.extend((((dest_callsign[6] & 0xF)<<1) | 0xE).to_bytes(1,'big'))
 	# Add source callsign, shifted left one bit:
 	for k in range(6):
 		kiss_frame.extend((source_callsign[k]<<1).to_bytes(1,'big'))
-	# Add source SSID with Address Extension Bit:
-	kiss_frame.extend((((source_callsign[6] & 0xF) << 1) | 1).to_bytes(1,'big'))
+	# Add source SSID with Address Extension Bit and RR bits:
+	kiss_frame.extend((((source_callsign[6] & 0xF) << 1) | 0x61).to_bytes(1,'big'))
 
 	# Add Control field for UI:
 	kiss_frame.extend((0x03).to_bytes(1,'big'))
