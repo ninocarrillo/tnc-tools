@@ -163,7 +163,7 @@ for i in range(0, frame_count):
 			payload.extend(bytearray(rand.to_bytes(1,'big')))
 		kiss_frame.extend(payload)
 	
-	print(f'\nFrame {i} content bytes:')
+	print(f'\nFrame {i+1} content bytes:')
 	character_counter = 0
 	for character in kiss_frame:
 		print(hex(character), end=' ')
