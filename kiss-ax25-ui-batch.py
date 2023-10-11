@@ -141,13 +141,15 @@ for i in range(0, frame_count):
 	# Add PID for No Layer 3:
 	kiss_frame.extend((0xF0).to_bytes(1,'big'))
 	
+	print(f'\nFrame {i} content bytes:')
+	for character in kiss_frame:
+		print(hex(character), end=' ')
 
 	# save the length of the kiss frame for payload length computations later
 	payload_length = len(kiss_frame)
 	
 
 	#kiss_frame.extend(payload)
-	#print(kiss_frame)
 	payload = bytearray(payload_text, 'UTF-8')
 	kiss_frame.extend(payload)
 	kiss_frame.extend(bytearray(str(i + 1), 'UTF-8'))
