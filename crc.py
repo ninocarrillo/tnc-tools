@@ -12,4 +12,4 @@ def CalcCRC16(packet):
 				fcsval = np.bitwise_xor(fcsval, CRC_poly)
 			byte = np.right_shift(byte, 1)
 	fcs_val = np.bitwise_and(np.bitwise_not(fcsval), 0xFFFF)
-	return(fcs_val)
+	return(hex(fcs_val))
