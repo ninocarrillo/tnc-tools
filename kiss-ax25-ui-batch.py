@@ -18,6 +18,7 @@ import serial
 import sys
 import time
 import random
+import crc
 
 def GracefulExit(port, code):
 	try:
