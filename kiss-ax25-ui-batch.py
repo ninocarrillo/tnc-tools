@@ -94,19 +94,19 @@ try:
 except:
 	print('Frame count argument is not an integer.')
 	GracefulExit(port, 6)
-	
+
 try:
 	payload_text = sys.argv[6]
 except:
 	print('Payload text is invalid.')
 	GracefulExit(port, 7)
-	
+
 try:
 	target_payload_length = int(sys.argv[7])
 except:
 	print('Payload length argument is not an integer.')
 	GracefulExit(port, 8)
-	
+
 try:
 	frame_interval = float(sys.argv[8])
 except:
@@ -144,14 +144,14 @@ for i in range(0, frame_count):
 
 	# save the length of the kiss frame for payload length computations later
 	payload_length = len(kiss_frame)
-	
+
 
 	#kiss_frame.extend(payload)
 	payload = bytearray(payload_text, 'UTF-8')
 	kiss_frame.extend(payload)
 	kiss_frame.extend(bytearray(str(i + 1), 'UTF-8'))
 	kiss_frame.extend(bytearray(" ", 'UTF-8'))
-	
+
 	payload_length = len(kiss_frame) - payload_length
 	#print(payload_length)
 
@@ -162,8 +162,8 @@ for i in range(0, frame_count):
 			rand = random.randint(32,126)
 			payload.extend(bytearray(rand.to_bytes(1,'big')))
 		kiss_frame.extend(payload)
-	
-	print(f'\nFrame {i+1} content bytes:')
+
+	print(f'\nFrame {i+1} CRC value: {crc.CalcCRC16(kiss_frame)}')
 	character_counter = 0
 	for character in kiss_frame:
 		print(hex(character), end=' ')
