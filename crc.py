@@ -1,6 +1,6 @@
 import numpy as np
 
-def CalcCRC16(packet, byte_count):
+def CalcCRC16(packet):
 	#packet_val = packet[byte_count - 1] * 256
 	#packet_val += packet[byte_count - 2]
 	# print(hex(packet_val))
