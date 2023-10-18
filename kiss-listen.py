@@ -11,6 +11,7 @@
 import serial
 import sys
 import datetime
+import crc
 
 def print_ax25_header(frame):
 	count = len(frame)
@@ -136,11 +137,12 @@ def print_ax25_header(frame):
 		print(" ")
 	return index
 
-def print_frame(frame, time, count):
+def print_frame(frame, time, crc_val, count):
 	print("\r\n-- ", end='')
 	print(time, end=' ')
 	frame_len = len(frame)
-	print("frame number: %d" % count, end=' ')
+	print(f'crc: {crc_val}', end='')
+	print(" number: %d" % count, end=' ')
 	print("byte count: ", frame_len, end='\r\n')
 	frame_lines = (frame_len // 16)
 	if (frame_len % 16) > 0:
@@ -211,8 +213,9 @@ while 1:
 				if len(kiss_frame) > 0:
 					frame_count += 1
 					t = datetime.datetime.now()
+					t = t.strftime('%Y-%m-%d %H:%M:%S.%f')
 					#kiss_frame_time = time.strftime("%H:%M:%S", t)
-					print_frame(kiss_frame, t, frame_count)
+					print_frame(kiss_frame, t[:-3], crc.CalcCRC16(kiss_frame[1:]), frame_count)
 					header_length = print_ax25_header(kiss_frame)
 					kiss_frame_string = ""
 					for character in kiss_frame[header_length:]:
