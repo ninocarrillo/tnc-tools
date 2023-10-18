@@ -296,10 +296,21 @@ receive_miss_count = 0
 
 receive_interlock = False
 
+keep_going = True
+
 #for transmit_frame_counter in range(0, transmit_frame_count_target):
-while transmit_frame_counter < transmit_frame_count_target:
+while keep_going:
 	if timer() - last_transmit_time > frame_interval:
 		transmit_trigger = True
+	keep_going = False
+	if transmit_frame_count_target > transmit_frame_counter:
+		keep_going = True
+	else:
+		transmit_trigger = False
+	if timer() - last_transmit_time < frame_interval:
+		keep_going = True
+		
+
 	
 	if transmit_trigger == True:
 		transmit_trigger = False
@@ -418,6 +429,10 @@ while transmit_frame_counter < transmit_frame_count_target:
 			elif ord(rx_serial_data) == RX_TFEND:
 				receive_frame.append(RX_FEND)
 				rx_kiss_state = "non-escaped"
+print('\nFinal status:')
+print(f'Receive Match Count: {receive_match_count}')
+print(f'Receive Mismatch Count: {receive_mismatch_count}')
+print(f'Receive Miss Count: {receive_miss_count}')
 
 print('\nDone.')
 GracefulExit2(tx_port, rx_port, 0)
