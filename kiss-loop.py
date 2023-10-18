@@ -355,7 +355,7 @@ while keep_going:
 		if payload_length < target_payload_length:
 			payload = bytearray()
 			for j in range(0, target_payload_length - payload_length):
-				rand = random.randint(0,255)
+				rand = random.randint(32,126)
 				payload.extend(bytearray(rand.to_bytes(1,'big')))
 			transmit_frame.extend(payload)
 
