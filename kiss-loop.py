@@ -2,7 +2,7 @@
 # Python3
 # Send, receive, and validate KISS frames from one serial port to another
 # Nino Carrillo
-# 18 Oct 2023
+# 29 Oct 2023
 # Exit codes
 # 1 Wrong python version
 # 2 Not enough command line arguments
@@ -16,6 +16,7 @@ import serial
 import sys
 from timeit import default_timer as timer
 import random
+import string
 import crc
 
 def GracefulExit2(porta, portb, code):
@@ -28,6 +29,12 @@ def GracefulExit2(porta, portb, code):
 	except:
 		pass	
 	sys.exit(code)
+	
+def GenerateRandomCallsign():
+	this = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+	this += '-'
+	this += ''.join(random.choices(string.digits, k=1))
+	return this
 	
 def print_ax25_header(frame):
 	count = len(frame)
@@ -244,12 +251,11 @@ except:
 	print('Unable to open receive serial port.')
 	sys.exit(4)
 
-source_callsign = StringCallsignToArray('abc123-4', 'Source Callsign or SSID is invalid.', 4)
+source_callsign = StringCallsignToArray(GenerateRandomCallsign(), 'Source Callsign or SSID is invalid.', 4)
+dest_callsign = StringCallsignToArray(GenerateRandomCallsign(), 'Destination Callsign or SSID is invalid.', 5)
 
-dest_callsign = StringCallsignToArray('DEF568-8', 'Destination Callsign or SSID is invalid.', 5)
-
-#print(source_callsign)
-#print(dest_callsign)
+print(source_callsign)
+print(dest_callsign)
 
 try:
 	transmit_frame_count_target = int(sys.argv[5])
@@ -322,6 +328,8 @@ while keep_going:
 		transmit_frame_counter += 1
 		# Assemble KISS frame:
 		transmit_frame = bytearray()
+		source_callsign = StringCallsignToArray(GenerateRandomCallsign(), 'Source Callsign or SSID is invalid.', 4)
+		dest_callsign = StringCallsignToArray(GenerateRandomCallsign(), 'Destination Callsign or SSID is invalid.', 5)
 		# Add destination callsign, shifted left one bit:
 		for j in range(6):
 			transmit_frame.extend((dest_callsign[j]<<1).to_bytes(1,'big'))
@@ -333,8 +341,8 @@ while keep_going:
 		# Add source SSID with Address Extension Bit and RR bits:
 		transmit_frame.extend((((source_callsign[6] & 0xF) << 1) | 0x61).to_bytes(1,'big'))
 
-		# Add Control field for UI:
-		transmit_frame.extend((0x03).to_bytes(1,'big'))
+		# Add Control field for TEST:
+		transmit_frame.extend((0xE3).to_bytes(1,'big'))
 		# Add PID for No Layer 3:
 		transmit_frame.extend((0xF0).to_bytes(1,'big'))
 
@@ -345,8 +353,10 @@ while keep_going:
 		#transmit_frame.extend(payload)
 		#payload = bytearray(payload_text, 'UTF-8')
 		#transmit_frame.extend(payload)
-		transmit_frame.extend(bytearray(str(transmit_frame_counter), 'UTF-8'))
-		transmit_frame.extend(bytearray(" ", 'UTF-8'))
+		
+		if target_payload_length > 1:
+			transmit_frame.extend(bytearray(str(transmit_frame_counter), 'UTF-8'))
+			transmit_frame.extend(bytearray(" ", 'UTF-8'))
 
 		payload_length = len(transmit_frame) - payload_length
 		#print(payload_length)
