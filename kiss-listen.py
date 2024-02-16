@@ -239,7 +239,7 @@ while 1:
 					if small_screen == True:
 						header_length = print_ax25_header(kiss_frame, "\n")
 					else:
-						header_length = print_ax25_header(kiss_frame. ", ")
+						header_length = print_ax25_header(kiss_frame, ", ")
 
 					kiss_frame_string = ""
 					for character in kiss_frame[header_length:]:
