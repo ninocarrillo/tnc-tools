@@ -233,7 +233,7 @@ while 1:
 					if dump_hex == True:
 						print_frame(kiss_frame, t[:-3], crc.CalcCRC16(kiss_frame[1:]), frame_count)
 					else:
-						print(f"***** {t[:-3]} *****")
+						print(f"******* {t[:-3]} *******")
 					if small_screen == True:
 						header_length = print_ax25_header(kiss_frame, "\n")
 					else:
