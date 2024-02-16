@@ -13,7 +13,7 @@ import sys
 import datetime
 import crc
 
-def print_ax25_header(frame):
+def print_ax25_header(frame, delimiter):
 	count = len(frame)
 	index = 0
 	if (count > 15):
@@ -34,9 +34,11 @@ def print_ax25_header(frame):
 				if (subfield_index == 0):
 					print("To:", end='')
 				elif (subfield_index == 1):
-					print(", From:", end='')
+					print(delimiter, end='')
+					print("From:", end='')
 				else:
-					print(", Via:", end='')
+					print(delimiter, end='')
+					print("Via:", end='')
 			if subfield_character_index < 7:
 				# This is a callsign character
 				if (working_character != 0) and (working_character != 0x20):
@@ -57,7 +59,8 @@ def print_ax25_header(frame):
 				address_extension_bit = 1
 		# Control and PID fields
 		working_character = frame[index]
-		print(", Control: ", end='')
+		print(delimiter, end='')
+		print("Control: ", end='')
 		print(f'{hex(working_character)} ', end='')
 		poll_final_bit = (working_character & 0x10) >> 4
 		# determine what type of frame this is
@@ -104,7 +107,8 @@ def print_ax25_header(frame):
 			# there is a PID byte.
 			index = index + 1
 			working_character = frame[index]
-			print(", PID: ", end='')
+			print(delimiter, end='')
+			print("PID: ", end='')
 			print(f'{hex(working_character)} ', end='')
 			if (working_character == 1):
 				print("ISO 8208", end='')
@@ -197,15 +201,12 @@ dump_hex = True
 small_screen = False
 
 arg_count = len(sys.argv) - 3
-print(arg_count)
-
 
 if arg_count > 0:
 	for arg_index in range(arg_count):
 		if sys.argv[arg_index + 3] == "nohex":
 			dump_hex = False
-			print("nohex")
-		elif sys.argv[arg_index + 3] == "40x25":
+		elif sys.argv[arg_index + 3] == "smallscreen":
 			small_screen = True
 
 kiss_state = "non-escaped"
@@ -234,7 +235,12 @@ while 1:
 						print_frame(kiss_frame, t[:-3], crc.CalcCRC16(kiss_frame[1:]), frame_count)
 					else:
 						print(t[:-3])
-					header_length = print_ax25_header(kiss_frame)
+
+					if small_screen == True:
+						header_length = print_ax25_header(kiss_frame, "\n")
+					else:
+						header_length = print_ax25_header(kiss_frame. ", ")
+
 					kiss_frame_string = ""
 					for character in kiss_frame[header_length:]:
 						kiss_frame_string += chr(character)
