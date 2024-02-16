@@ -22,7 +22,6 @@ def print_ax25_header(frame, delimiter):
 		index = 1
 		subfield_character_index = 0
 		subfield_index = 0
-		print("- AX.25 Decode:")
 		# Print address information
 		while address_extension_bit == 0:
 			working_character = int(frame[index])
@@ -234,8 +233,7 @@ while 1:
 					if dump_hex == True:
 						print_frame(kiss_frame, t[:-3], crc.CalcCRC16(kiss_frame[1:]), frame_count)
 					else:
-						print(t[:-3])
-
+						print(f"***** {t[:-3]} *****")
 					if small_screen == True:
 						header_length = print_ax25_header(kiss_frame, "\n")
 					else:
