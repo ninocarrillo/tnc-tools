@@ -344,7 +344,7 @@ while keep_going:
 		# Add Control field for TEST:
 		transmit_frame.extend((0xE3).to_bytes(1,'big'))
 		# Add PID for No Layer 3:
-		transmit_frame.extend((0xF0).to_bytes(1,'big'))
+		#transmit_frame.extend((0xF0).to_bytes(1,'big'))
 
 		# save the length of the kiss frame for payload length computations later
 		payload_length = len(transmit_frame)

@@ -232,6 +232,8 @@ while 1:
 					#kiss_frame_time = time.strftime("%H:%M:%S", t)
 					if dump_hex == True:
 						print_frame(kiss_frame, t[:-3], crc.CalcCRC16(kiss_frame[1:]), frame_count)
+					else:
+						print(t[:-3])
 					header_length = print_ax25_header(kiss_frame)
 					kiss_frame_string = ""
 					for character in kiss_frame[header_length:]:
