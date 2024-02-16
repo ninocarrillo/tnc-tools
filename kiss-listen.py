@@ -193,6 +193,21 @@ except:
 
 print('Opened port', sys.argv[1])
 
+dump_hex = True
+small_screen = False
+
+arg_count = len(sys.argv) - 3
+print(arg_count)
+
+
+if arg_count > 0:
+	for arg_index in range(arg_count):
+		if sys.argv[arg_index + 3] == "nohex":
+			dump_hex = False
+			print("nohex")
+		elif sys.argv[arg_index + 3] == "40x25":
+			small_screen = True
+
 kiss_state = "non-escaped"
 kiss_frame = []
 FESC = 0xDB
@@ -215,7 +230,8 @@ while 1:
 					t = datetime.datetime.now()
 					t = t.strftime('%Y-%m-%d %H:%M:%S.%f')
 					#kiss_frame_time = time.strftime("%H:%M:%S", t)
-					print_frame(kiss_frame, t[:-3], crc.CalcCRC16(kiss_frame[1:]), frame_count)
+					if dump_hex == True:
+						print_frame(kiss_frame, t[:-3], crc.CalcCRC16(kiss_frame[1:]), frame_count)
 					header_length = print_ax25_header(kiss_frame)
 					kiss_frame_string = ""
 					for character in kiss_frame[header_length:]:
