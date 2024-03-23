@@ -62,7 +62,7 @@ if len(sys.argv) < 4:
 	print(f'SETPERSIST nnn         : Set CSMA persistance value, 0 to 255.')
 	print(f'SETSLOT nnn            : Set CSMA slot time in 10mS units, 0 to 255.')
 	print(f'SETTXD nnn             : Set TX_DELAY in 10mS units, 0 to 255, if TX_DELAY pot set to zero.')
-	print(f'SETTXTAIL nnn          : Set TX_TAIL in 10mS units, 0 to 255. Not on NinoTNC.')
+	print(f'SETTXTAIL nnn          : Set TX_TAIL in 10mS units, 0 to 255. 1mS units on NinoTNC fw .36 and up.')
 	print(f'SETHW nnn              : Issue SetHardware KISS command to the modem, passing one byte to it.')
 	
 	sys.exit(2)
