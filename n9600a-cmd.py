@@ -196,6 +196,11 @@ elif command_string == 'SETHW':
 		print('Invalid value for single byte SETHW command. Must be 0 to 255.')
 		sys.exit(5)
 	value.extend(int(value_int).to_bytes(1,'big'))
+elif command_string == 'GETRSSI':
+	print('get rssi')
+	command.extend(int(0x9).to_bytes(1,'big'))
+	command.extend(int(0xA7).to_bytes(1,'big'))
+	get_response = 'yes'
 else:
 	print('Unrecognized command.')
 	sys.exit(4)
