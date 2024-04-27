@@ -210,6 +210,9 @@ try:
 except:
 	print('Unable to open serial port.')
 	sys.exit(3)
+	
+port.flushInput()
+port.flushOutput()
 
 kiss_output_frame = AssembleKISSFrame(command + value)
 print(" ".join(hex(b) for b in kiss_output_frame))
