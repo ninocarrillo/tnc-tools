@@ -240,8 +240,11 @@ while 1:
 						header_length = print_ax25_header(kiss_frame, ", ")
 
 					kiss_frame_string = ""
-					for character in kiss_frame[header_length:]:
-						kiss_frame_string += chr(character)
+					for byte in kiss_frame[header_length:]:
+						if (byte < 0x7F) and (byte > 0x1F):
+							kiss_frame_string += chr(int(byte))
+						else:
+							kiss_frame_string += f'<{hex(int(byte))}>'
 					print(kiss_frame_string)
 					kiss_frame = []
 				else:
