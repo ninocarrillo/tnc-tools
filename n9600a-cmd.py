@@ -62,7 +62,7 @@ if len(sys.argv) < 4:
 	print(f'SETPERSIST nnn         : Set CSMA persistance value, 0 to 255.')
 	print(f'SETSLOT nnn            : Set CSMA slot time in 10mS units, 0 to 255.')
 	print(f'SETTXD nnn             : Set TX_DELAY in 10mS units, 0 to 255, if TX_DELAY pot set to zero.')
-	print(f'SETTXTAIL nnn          : Set TX_TAIL in 10mS units, 0 to 255. Not on NinoTNC.')
+	print(f'SETTXTAIL nnn          : Set TX_TAIL in 10mS units, 0 to 255. Supported on NinoTNC fw .36 and up.')
 	print(f'SETHW nnn              : Issue SetHardware KISS command to the modem, passing one byte to it.')
 	
 	sys.exit(2)
@@ -196,6 +196,11 @@ elif command_string == 'SETHW':
 		print('Invalid value for single byte SETHW command. Must be 0 to 255.')
 		sys.exit(5)
 	value.extend(int(value_int).to_bytes(1,'big'))
+elif command_string == 'GETRSSI':
+	print('get rssi')
+	command.extend(int(0x9).to_bytes(1,'big'))
+	command.extend(int(0xA7).to_bytes(1,'big'))
+	get_response = 'yes'
 else:
 	print('Unrecognized command.')
 	sys.exit(4)
@@ -205,6 +210,9 @@ try:
 except:
 	print('Unable to open serial port.')
 	sys.exit(3)
+	
+port.flushInput()
+port.flushOutput()
 
 kiss_output_frame = AssembleKISSFrame(command + value)
 print(" ".join(hex(b) for b in kiss_output_frame))
