@@ -5,7 +5,7 @@ Utilities for interfacing with N9600A NinoTNC and other generic KISS TNCs connec
 - Pyserial
 # Command Descriptions
 ## n9600a-cmd.py
-Usage: `python3 n9600a-cmd.py <serial device> <command> <optional value>`
+Usage: `python3 n9600a-cmd.py <serial device> <baud rate> <command> <optional value>`
 
 Send command frames to an N9600A NinoTNC attached to the specified serial port. Invoke without arguments for a list of available commands. The serial number of the TNC must be clear before it can be set. Use CLRSERNO to clear it. 
 
@@ -13,7 +13,7 @@ Example without argument:
 ````
 C:\github\tnc-tools>py -3 n9600a-cmd.py com18
 Not enough arguments. Usage prototype below.
-python3 n9600a-cmd.py <serial device> <command> <optional value>
+python3 n9600a-cmd.py <serial device> <baud rate> <command> <optional value>
 Available commands:
 CLRSERNO               : Erases the stored TNC serial number. Perform before SETSERNO.
 SETSERNO xxxxxxxx      : Sets the TNC serial number, value is 8 ASCII characters.
@@ -28,14 +28,14 @@ SETSLOT nnn            : Set CSMA slot time in 10mS units, 0 to 255.
 ````
 Example GETVER:
 ````
-C:\github\tnc-tools>py -3 n9600a-cmd.py com18 getver
+C:\github\tnc-tools>py -3 n9600a-cmd.py com18 57600 getver
 4.21
 ````
 Example SETSERNO and GETSERNO:
 ````
-C:\github\tnc-tools>py -3 n9600a-cmd.py com18 setserno ABc12D9x
+C:\github\tnc-tools>py -3 n9600a-cmd.py com18 57600 setserno ABc12D9x
 
-C:\github\tnc-tools>py -3 n9600a-cmd.py com18 getserno
+C:\github\tnc-tools>py -3 n9600a-cmd.py com18 57600 getserno
 ABc12D9x
 ````
 
