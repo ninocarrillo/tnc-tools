@@ -121,9 +121,11 @@ FEND = int(0xC0).to_bytes(1,'big')
 TFESC = int(0xDD).to_bytes(1,'big')
 TFEND = int(0xDC).to_bytes(1,'big')
 KISS_PORT = 0
-KISS_COMMAND = 0x0
+KISS_COMMAND = 0xC #ackmode
 KISS_TYPE_ID = (KISS_PORT * 16) + KISS_COMMAND
 KISS_TYPE_ID = KISS_TYPE_ID.to_bytes(1,'big')
+ACKMODE_ID = 1
+ACKMODE_ID = ACKMODE_ID.to_bytes(2,'big')
 
 for i in range(0, frame_count):
 
@@ -190,7 +192,7 @@ for i in range(0, frame_count):
 		else:
 			kiss_output_frame.extend(kiss_byte.to_bytes(1, 'big'))
 		frame_index += 1
-	kiss_output_frame = bytearray(FEND) + bytearray(KISS_TYPE_ID) + kiss_output_frame + bytearray(FEND)
+	kiss_output_frame = bytearray(FEND) + bytearray(KISS_TYPE_ID) + bytearray(ACKMODE_ID) + kiss_output_frame + bytearray(FEND)
 	# print(kiss_output_frame)
 	frame_time = len(kiss_output_frame) * 10 / int(sys.argv[2])
 	port.write(kiss_output_frame)
