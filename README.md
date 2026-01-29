@@ -60,42 +60,11 @@ FI^i;}           | 46 49 5E 69 3B 7D
 To:KA2DEW-5, From:KK4HEJ-4, Control: UI, PID: No Layer 3
 GFSK 9600 IL2P -120dBm 1 ~EBB&P4"PPhaB'|%<kSHcpFI^i;}
 ````
-## kiss-ax25-ui.py
-Usage: `python3 kiss-ax25-ui.py <serial device> <baud rate> <src call-ssid> <optional dest call-ssid> <optional payload>`
-
-Generate a single AX.25 un-numbered information packet, like an APRS packet, and send it to the specified serial port with KISS encapsulation. Only the serial device, baud rate, and source callsign arguments are requred. Destination callsign will default to "IDENT-0" if omitted. Payload argument should be enclosed in double quotes if it contains whitespace. This utility is handy for setting the source callsign on a NinoTNC, send one packet from your callsign and the TNC will use it for subsequent test packets when the TEST_TX button is pressed.
-
-Minimum argument example:
-````
-C:\github\tnc-tools>py -3 kiss-ax25-ui.py com18 57600 kk4hej-4
-````
-At the receiver, this generates a packet that looks like:
-````
--- 2023-03-15 14:13:13.365019 frame number: 27 byte count:  17
-......@`..h..... |  0 92 88 8A 9C A8 40 60 96 96 68 90 8A 94 E9  3
-.                | F0
-- AX.25 Decode:
-To:IDENT-0, From:KK4HEJ-4, Control: UI, PID: No Layer 3
-````
-Example with a payload:
-````
-C:\github\tnc-tools>py -3 kiss-ax25-ui.py com18 57600 kk4hej-4 aprs ":payload can be an APRS information field"
-````
-Received packet:
-````
--- 2023-03-15 14:16:40.761511 frame number: 30 byte count:  58
-.....@@`..h..... |  0 82 A0 A4 A6 40 40 60 96 96 68 90 8A 94 E9  3
-.:payload can be | F0 3A 70 61 79 6C 6F 61 64 20 63 61 6E 20 62 65
- an APRS informa | 20 61 6E 20 41 50 52 53 20 69 6E 66 6F 72 6D 61
-tion field       | 74 69 6F 6E 20 66 69 65 6C 64
-- AX.25 Decode:
-To:APRS-0, From:KK4HEJ-4, Control: UI, PID: No Layer 3
-:payload can be an APRS information field
-````
 ## kiss-ax25-ui-batch.py
 Usage: `python3 kiss-ax25-ui-batch.py <serial device> <baud rate> <src call-ssid> <dest call-ssid> <frame count> <payload text> <payload length> <frame interval>`
+Usage: `python3 kiss-ax25-ui-batch.py <serial device> <baud rate> <src call-ssid> <dest call-ssid[,rpt call-ssid]> <frame count> <payload text> <payload length> <frame interval>`
 
-Generate a sequence of un-numbered information frames and send them to the serial port at the specified interval. Useful for testing links and bench testing TNCs and radios. Program accepts a payload text argument, as well as a payload length argument. If the payload length requested is longer than the supplied payload text (plus an added frame index) then the program extends each payload with random printable characters to meet the requested payload length.
+Generate a sequence of un-numbered information frames and send them to the serial port at the specified interval. Useful for testing links and bench testing TNCs and radios. Program accepts a payload text argument, as well as a payload length argument. If the payload length requested is longer than the supplied payload text (plus an added frame index) then the program extends each payload with random printable characters to meet the requested payload length. Repeater callsigns can optionally be included in the <dest call-ssid> field, delimited by a comma.
 
 Example:
 ````
