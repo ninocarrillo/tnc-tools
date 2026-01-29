@@ -74,7 +74,8 @@ if sys.version_info < (3, 0):
 	sys.exit(1)
 
 if len(sys.argv) < 9:
-	print('Not enough arguments. Usage prototype below.\r\npython3 kiss-ax25-ui-batch.py <serial device> <baud rate> <src call-ssid> <dest call-ssid> <frame count> <payload text> <payload length> <frame interval>')
+	print('Not enough arguments. Usage prototype below.\r\npython3 kiss-ax25-ui-batch.py <serial device> <baud rate> <src call-ssid> <dest call-ssid[,rpt call-ssid]> <frame count> <payload text> <payload length> <frame interval>')
+	print('Repeater callsigns can optionally be included in the <dest call-ssid> field, delimited by a comma.')
 	sys.exit(2)
 
 try:
@@ -85,7 +86,16 @@ except:
 
 source_callsign = StringCallsignToArray(sys.argv[3], 'Source Callsign or SSID is invalid.', 4)
 
-dest_callsign = StringCallsignToArray(sys.argv[4], 'Destination Callsign or SSID is invalid.', 5)
+dest_list = sys.argv[4].split(',')
+dest_callsign = StringCallsignToArray(dest_list[0], 'Destination Callsign or SSID is invalid.', 5)
+
+repeater_list = []
+#print(dest_list)
+repeater_count = 0
+for repeater in dest_list[1:]:
+	repeater_list.append(StringCallsignToArray(repeater, 'Repeater Callsign or SSID is invalid.', 5))
+	repeater_count += 1
+print(repeater_count)
 
 #print(source_callsign)
 #print(dest_callsign)
@@ -137,8 +147,25 @@ for i in range(0, frame_count):
 	# Add source callsign, shifted left one bit:
 	for k in range(6):
 		kiss_frame.extend((source_callsign[k]<<1).to_bytes(1,'big'))
-	# Add source SSID with Address Extension Bit and RR bits:
-	kiss_frame.extend((((source_callsign[6] & 0xF) << 1) | 0x61).to_bytes(1,'big'))
+	
+	# deterimine if there are repeater callsigns to add:
+	if repeater_count > 0:
+		# Add source SSID with Address Extension Bit clear
+		kiss_frame.extend((((source_callsign[6] & 0xF)<<1) | 0x60).to_bytes(1,'big'))
+		# Add repeater callsigns
+		for repeater_callsign in repeater_list:
+			repeater_count -= 1
+			for j in range(6):
+				kiss_frame.extend((repeater_callsign[j]<<1).to_bytes(1,'big'))
+			if repeater_count == 0:
+				# Add destination SSID with CRR bits set and Address Extension bit set
+				kiss_frame.extend((((repeater_callsign[6] & 0xF)<<1) | 0xE1).to_bytes(1,'big'))
+			else:
+				# Add destination SSID with CRR bits set and Address Extension bit clear
+				kiss_frame.extend((((repeater_callsign[6] & 0xF)<<1) | 0xE0).to_bytes(1,'big'))
+	else:
+		# Add source SSID with Address Extension Bit and RR bits:
+		kiss_frame.extend((((source_callsign[6] & 0xF)<<1) | 0x61).to_bytes(1,'big'))
 
 	# Add Control field for UI:
 	kiss_frame.extend((0x03).to_bytes(1,'big'))
