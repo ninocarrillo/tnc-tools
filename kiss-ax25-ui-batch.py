@@ -159,10 +159,10 @@ for i in range(0, frame_count):
 				kiss_frame.extend((repeater_callsign[j]<<1).to_bytes(1,'big'))
 			if repeater_count == 0:
 				# Add destination SSID with CRR bits set and Address Extension bit set
-				kiss_frame.extend((((repeater_callsign[6] & 0xF)<<1) | 0xE1).to_bytes(1,'big'))
+				kiss_frame.extend((((repeater_callsign[6] & 0xF)<<1) | 0x61).to_bytes(1,'big'))
 			else:
 				# Add destination SSID with CRR bits set and Address Extension bit clear
-				kiss_frame.extend((((repeater_callsign[6] & 0xF)<<1) | 0xE0).to_bytes(1,'big'))
+				kiss_frame.extend((((repeater_callsign[6] & 0xF)<<1) | 0x60).to_bytes(1,'big'))
 	else:
 		# Add source SSID with Address Extension Bit and RR bits:
 		kiss_frame.extend((((source_callsign[6] & 0xF)<<1) | 0x61).to_bytes(1,'big'))
